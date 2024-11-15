@@ -1,0 +1,62 @@
+# Use the PHP 8.3 FPM image
+FROM php:8.3-fpm
+
+# Install necessary packages and dependencies
+RUN apt-get update && \
+    apt-get install -y \
+        nginx \
+        unzip \
+        curl \
+        libsodium-dev \
+        libicu-dev \
+        libzip-dev \
+        libonig-dev \
+        libpng-dev \
+        libjpeg-dev \
+        libfreetype6-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions needed by Laravel and Filament
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) \
+        bcmath \
+        ctype \
+        fileinfo \
+        json \
+        mbstring \
+        openssl \
+        pdo \
+        pdo_mysql \
+        tokenizer \
+        xml \
+        intl \
+        zip \
+        gd
+
+# Enable extensions
+RUN docker-php-ext-enable \
+        bcmath \
+        ctype \
+        fileinfo \
+        json \
+        mbstring \
+        openssl \
+        pdo \
+        pdo_mysql \
+        tokenizer \
+        xml \
+        intl \
+        zip \
+        gd
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Set the working directory
+WORKDIR /var/www/html
+
+# Expose port 80 for Nginx
+EXPOSE 80
+
+# Start Nginx and PHP-FPM
+CMD ["sh", "-c", "service nginx start && php-fpm"]
