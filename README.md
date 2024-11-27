@@ -38,3 +38,5 @@ php artisan migrate
 php artisan make:filament-page ViewCategory --resource=CategoryResource --type=ViewRecord
 
 php artisan make:factory CategoryFactory
+
+php artisan make:filament-page ViewProduct --resource=ProductResource --type=ViewRecord
